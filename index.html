@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/Q76xtdNF/Capture.png">
+  <link rel="shortcut icon" type="image/png" href="https://i.ibb.co/Q76xtdNF/Capture.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/Q76xtdNF/Capture.png">
+  <meta name="description" content="Give your WordPress eBook library an AI-powered reading experience with chapter summaries, book-aware answers, notes and reading progress.">
+  <title>Readwise — The AI reading experience for WordPress</title>
+  <style>
+    :root {
+      --ink: #171916;
+      --muted: #62685f;
+      --paper: #f7f7f2;
+      --white: #fff;
+      --line: #e2e5dc;
+      --green: #c9f36a;
+      --green-dark: #294414;
+      --soft: #eef1e8;
+      --radius: 20px;
+      --shadow: 0 18px 55px rgba(23, 25, 22, .09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #ffffff;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    .wrap { width: min(1160px, calc(100% - 48px)); margin: 0 auto; }
+    .announcement {
+      background: var(--ink); color: #f7f7f2; text-align: center;
+      padding: 9px 16px; font-size: 12px; letter-spacing: .06em;
+    }
+    .announcement strong { color: var(--green); font-weight: 700; }
+    header {
+      height: 78px; display: flex; align-items: center;
+      border-bottom: 1px solid var(--line); background: rgba(247,247,242,.94);
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: -.06em; }
+    .brand-mark { width: 29px; height: 29px; background: var(--green); border: 1px solid var(--ink); border-radius: 8px; display: grid; place-items: center; }
+    .brand-mark span { width: 11px; height: 14px; border: 2px solid var(--ink); border-left-width: 4px; display: block; }
+    .nav-links { display: flex; align-items: center; gap: 30px; color: var(--muted); font-size: 13px; font-weight: 600; }
+    .nav-links a:hover { color: var(--ink); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      border: 1px solid var(--ink); border-radius: 999px; padding: 13px 20px;
+      background: var(--ink); color: white; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: transform .2s, background .2s, color .2s;
+    }
+    .btn:hover { transform: translateY(-2px); background: #343a30; }
+    .btn-light { background: var(--green); color: var(--ink); border-color: var(--green); }
+    .btn-light:hover { background: #b8e653; }
+    .btn-outline { background: transparent; color: var(--ink); }
+    .btn-outline:hover { background: var(--ink); color: white; }
+    .hero { padding: 88px 0 76px; overflow: hidden; }
+    .hero-grid { display: grid; grid-template-columns: 1.03fr .97fr; align-items: center; gap: 60px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; color: var(--green-dark); text-transform: uppercase; letter-spacing: .13em; font-size: 10px; font-weight: 800; }
+    .eyebrow:before { content: ""; width: 22px; height: 2px; background: var(--green-dark); }
+    h1 { font-size: clamp(46px, 5.6vw, 72px); line-height: .99; letter-spacing: -.075em; margin: 22px 0 23px; max-width: 650px; }
+    h1 em { font-style: normal; background: var(--green); padding: 0 8px 4px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+    .hero-copy { color: var(--muted); font-size: 17px; max-width: 510px; margin: 0 0 30px; }
+    .hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .microcopy { margin-top: 14px; font-size: 11px; color: #777d73; }
+    .proof { display: flex; align-items: center; gap: 16px; margin-top: 34px; color: var(--muted); font-size: 11px; }
+    .proof-line { height: 1px; width: 34px; background: #aab19f; }
+    .visual-wrap { position: relative; padding: 22px 0 22px 22px; }
+    .visual-wrap:before { content: ""; position: absolute; inset: 0 0 0 12%; border: 1px solid #dce2d1; border-radius: 28px; }
+    .reader {
+      position: relative; background: var(--white); border: 1px solid #dfe3d9;
+      border-radius: 16px; box-shadow: var(--shadow); overflow: hidden;
+      transform: rotate(1.2deg);
+    }
+    .reader-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 17px; border-bottom: 1px solid var(--line); font-size: 10px; color: var(--muted); }
+    .dots { display: flex; gap: 4px; }
+    .dots i { width: 6px; height: 6px; background: #d6dbd0; border-radius: 50%; }
+    .reader-body { display: grid; grid-template-columns: 1fr 175px; min-height: 360px; }
+    .book-page { padding: 34px 30px; }
+    .book-kicker { color: #849078; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; font-weight: 800; }
+    .book-title { font-family: Georgia, serif; font-size: 30px; line-height: 1.08; letter-spacing: -.04em; margin: 15px 0 17px; }
+    .book-rule { width: 32px; height: 3px; background: var(--green); margin-bottom: 18px; }
+    .book-text { color: #74796f; font-family: Georgia, serif; font-size: 11px; line-height: 1.9; }
+    .book-text b { color: #3d4438; }
+    .reader-aside { background: #f4f6ef; border-left: 1px solid var(--line); padding: 18px 13px; }
+    .ai-label { display: flex; align-items: center; gap: 6px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+    .ai-square { width: 17px; height: 17px; background: var(--green); border: 1px solid #a5ca55; border-radius: 5px; }
+    .summary-title { font-family: Georgia, serif; font-size: 16px; line-height: 1.15; margin: 20px 0 9px; }
+    .summary-text { color: #6a7065; font-size: 9px; line-height: 1.65; }
+    .takeaway { margin-top: 15px; padding: 10px; background: white; border: 1px solid #e5e9df; border-radius: 8px; font-size: 9px; color: #555d50; }
+    .takeaway strong { display: block; color: var(--ink); margin-bottom: 4px; }
+    .reader-foot { display: flex; align-items: center; justify-content: space-between; padding: 12px 17px; border-top: 1px solid var(--line); font-size: 9px; color: #73796f; }
+    .progress { width: 95px; height: 4px; border-radius: 10px; background: #e5e9df; overflow: hidden; }
+    .progress span { display: block; width: 38%; height: 100%; background: #9acb3d; }
+    .floating-note { position: absolute; right: -15px; bottom: 4px; width: 185px; padding: 14px; border-radius: 12px; background: var(--green); box-shadow: 0 12px 30px rgba(23,25,22,.12); font-size: 10px; font-weight: 700; transform: rotate(-3deg); }
+    .floating-note small { display: block; font-size: 8px; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 6px; opacity: .65; }
+    .section { padding: 94px 0; }
+    .section-white { background: white; }
+    .section-dark { background: var(--ink); color: white; }
+    .section-head { max-width: 650px; margin-bottom: 42px; }
+    .section-head.center { text-align: center; margin-left: auto; margin-right: auto; }
+    .section-head.center .eyebrow { justify-content: center; }
+    h2 { font-size: clamp(34px, 4vw, 48px); line-height: 1.04; letter-spacing: -.065em; margin: 16px 0; }
+    .section-head p { color: var(--muted); font-size: 15px; margin: 0; }
+    .section-dark .section-head p { color: #aeb4a8; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .feature { background: var(--paper); border: 1px solid var(--line); border-radius: 15px; padding: 25px; min-height: 205px; }
+    .feature-number { color: #82906f; font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+    .feature h3 { font-size: 17px; letter-spacing: -.035em; margin: 24px 0 8px; }
+    .feature p { color: var(--muted); font-size: 12px; margin: 0; line-height: 1.7; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 35px; }
+    .step { border-top: 1px solid #485044; padding-top: 20px; }
+    .step-num { color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+    .step h3 { font-size: 20px; margin: 17px 0 8px; letter-spacing: -.04em; }
+    .step p { color: #aeb4a8; font-size: 13px; margin: 0; max-width: 300px; }
+    .audience-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 70px; align-items: start; }
+    .audience-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .audience-item { padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: white; font-size: 13px; font-weight: 650; }
+    .audience-item span { display: block; color: var(--muted); font-size: 10px; font-weight: 400; margin-top: 5px; }
+    .waitlist { background: var(--green); border-radius: 22px; padding: 48px; display: grid; grid-template-columns: 1fr .9fr; gap: 40px; align-items: center; }
+    .waitlist h2 { margin-top: 0; max-width: 460px; }
+    .waitlist p { color: #46523a; font-size: 13px; max-width: 420px; margin-bottom: 0; }
+    .form-card { background: white; border-radius: 15px; padding: 22px; box-shadow: 0 12px 35px rgba(23,25,22,.08); }
+    .form-card label { display: block; font-size: 10px; font-weight: 750; margin: 0 0 6px; }
+    .form-card input, .form-card select { width: 100%; border: 1px solid #dfe3d9; background: #fff; padding: 12px 13px; border-radius: 8px; margin-bottom: 13px; outline: none; font-size: 12px; color: var(--ink); }
+    .form-card input:focus, .form-card select:focus { border-color: #718d42; box-shadow: 0 0 0 3px rgba(154,203,61,.17); }
+    .form-card .btn { width: 100%; margin-top: 3px; }
+    .form-note { font-size: 9px; color: #7c8278; text-align: center; margin-top: 10px; }
+    .form-status { font-size: 11px; margin-top: 10px; color: #294414; display: none; }
+    .faq-grid { display: grid; grid-template-columns: .7fr 1.3fr; gap: 65px; }
+    .faq-list details { border-bottom: 1px solid var(--line); padding: 18px 0; }
+    .faq-list summary { cursor: pointer; list-style: none; font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; gap: 20px; }
+    .faq-list summary::-webkit-details-marker { display: none; }
+    .faq-list summary:after { content: "+"; font-size: 20px; font-weight: 400; line-height: 1; }
+    .faq-list details[open] summary:after { content: "−"; }
+    .faq-list p { color: var(--muted); font-size: 12px; max-width: 620px; margin: 12px 25px 0 0; }
+    footer { padding: 27px 0; border-top: 1px solid var(--line); }
+    .footer-inner { display: flex; justify-content: space-between; gap: 20px; color: var(--muted); font-size: 10px; }
+    .footer-inner strong { color: var(--ink); }
+    @media (max-width: 850px) {
+      .hero-grid, .audience-grid, .waitlist, .faq-grid { grid-template-columns: 1fr; gap: 42px; }
+      .hero { padding-top: 65px; }
+      .visual-wrap { max-width: 590px; margin: 0 auto; width: 100%; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .waitlist { padding: 35px; }
+      .faq-grid { gap: 10px; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 32px, 1160px); }
+      header { height: 66px; }
+      .nav-links { display: none; }
+      .nav .btn { padding: 10px 14px; font-size: 11px; }
+      .hero { padding: 55px 0 58px; }
+      h1 { font-size: clamp(43px, 13vw, 60px); }
+      .hero-copy { font-size: 15px; }
+      .hero-actions .btn { width: 100%; }
+      .proof { flex-wrap: wrap; }
+      .reader-body { grid-template-columns: 1fr 132px; min-height: 320px; }
+      .book-page { padding: 25px 17px; }
+      .book-title { font-size: 25px; }
+      .reader-aside { padding: 14px 10px; }
+      .floating-note { right: -5px; width: 155px; }
+      .section { padding: 68px 0; }
+      .feature-grid, .steps, .audience-list { grid-template-columns: 1fr; }
+      .feature { min-height: 0; }
+      .feature h3 { margin-top: 15px; }
+      .waitlist { padding: 25px 18px; }
+      .form-card { padding: 18px; }
+      .footer-inner { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement"><strong>BUILT FOR WORDPRESS</strong> &nbsp; A smarter, AI-powered way to experience your eBook library.</div>
+  <header style="background-color:#ffffff;">
+    <div class="wrap nav">
+      <a class="brand" href="#" aria-label="Readwise home"><span><img style="width:50px; height:50px" src="https://i.ibb.co/Q76xtdNF/Capture.png"></span></span>readwise</a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#features">Features</a><a href="#how-it-works">How it works</a><a href="#who-its-for">Who it's for</a><a href="#faq">FAQ</a>
+      </nav>
+      <a class="btn" href="https://wa.me/919937191669?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20Readwise.">Talk to us <span aria-hidden="true">→</span></a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">A smarter way to read on WordPress</div>
+          <h1>Your eBook library deserves an <em>AI upgrade.</em></h1>
+          <p class="hero-copy">Give readers more than a download link. Readwise transforms your WordPress eBook library into an engaging reading space where people can read, understand and explore books with an AI assistant built around the content.</p>
+          <div class="hero-actions">
+            <a class="btn" href="https://wa.me/919937191669?text=Hi%2C%20I%27d%20like%20to%20see%20Readwise%20for%20my%20WordPress%20website.">Get Readwise <span aria-hidden="true">→</span></a>
+            <a class="btn btn-outline" href="#features">Explore the concept</a>
+          </div>
+          <div class="microcopy">Want to bring a more intelligent reading experience to your website? Let’s talk.</div>
+          <div class="proof"><span class="proof-line"></span> Designed for WordPress publishers, educators and digital libraries</div>
+        </div>
+        <div class="visual-wrap" aria-label="Illustration of an ebook reader with an AI chapter summary">
+          <div class="reader">
+            <div class="reader-top"><span class="dots"><i></i><i></i><i></i></span><span>YOUR DIGITAL LIBRARY / READING VIEW</span><span>Aa</span></div>
+            <div class="reader-body">
+              <div class="book-page">
+                <div class="book-kicker">A guide to better thinking</div>
+                <div class="book-title">The Art of<br>Understanding</div>
+                <div class="book-rule"></div>
+                <div class="book-text">CHAPTER 04<br><br>Understanding a new idea begins with curiosity. The best readers do not simply move across a page; they pause, connect concepts and ask better questions.<br><br><b>Knowledge becomes useful when it can be applied.</b> Reading is not only about collecting information. It is about building a clearer picture of the world.</div>
+              </div>
+              <aside class="reader-aside">
+                <div class="ai-label"><span class="ai-square"></span> AI chapter brief</div>
+                <div class="summary-title">The chapter, made clear.</div>
+                <div class="summary-text">This chapter explains how active reading turns information into understanding through curiosity, reflection and application.</div>
+                <div class="takeaway"><strong>Key takeaway</strong>Pause, connect ideas and turn what you read into action.</div>
+                <div class="takeaway"><strong>Ask the book</strong>Get an answer grounded in this chapter.</div>
+              </aside>
+            </div>
+            <div class="reader-foot"><span>Chapter 4 of 12</span><span class="progress"><span></span></span><span>38% read</span></div>
+          </div>
+          <div class="floating-note"><small>One reading space</small>Read the book. Understand the ideas. Ask better questions.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">More than a document viewer</div>
+          <h2>Everything readers need to go beyond the page.</h2>
+          <p>A focused reading experience with AI tools that help people understand and retain what they read.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature"><div class="feature-number">01 / READ</div><h3>Read inside your website</h3><p>Offer a clean, responsive reading interface for supported PDF and EPUB books, without sending visitors elsewhere.</p></article>
+          <article class="feature"><div class="feature-number">02 / SUMMARISE</div><h3>Understand chapters faster</h3><p>Generate concise summaries, key points and explanations for a whole book or a selected chapter.</p></article>
+          <article class="feature"><div class="feature-number">03 / ASK</div><h3>Ask questions about the book</h3><p>Let readers ask questions and receive answers grounded in the book's content, with source references where available.</p></article>
+          <article class="feature"><div class="feature-number">04 / LEARN</div><h3>Turn reading into learning</h3><p>Create revision notes, concept explanations and quizzes to reinforce important ideas.</p></article>
+          <article class="feature"><div class="feature-number">05 / CONTINUE</div><h3>Pick up where you left off</h3><p>Save bookmarks and reading position, and make progress visible across a reader's library.</p></article>
+          <article class="feature"><div class="feature-number">06 / MANAGE</div><h3>Keep control in WordPress</h3><p>Manage your library and reader experience from your WordPress dashboard, with configurable AI settings.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="how-it-works">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Simple for readers. Manageable for site owners.</div>
+          <h2>From book upload to better understanding.</h2>
+          <p>Readwise fits into your existing WordPress workflow, giving your readers a more useful way to engage with every book.</p>
+        </div>
+        <div class="steps">
+          <article class="step"><div class="step-num">STEP 01</div><h3>Add your books</h3><p>Build a digital library with supported eBook files and organise titles for your audience.</p></article>
+          <article class="step"><div class="step-num">STEP 02</div><h3>Publish your reader</h3><p>Place the reading experience on a WordPress page and control who can access your library.</p></article>
+          <article class="step"><div class="step-num">STEP 03</div><h3>Let readers explore</h3><p>Readers open a book, explore summaries and ask questions as they move through the content.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="who-its-for">
+      <div class="wrap audience-grid">
+        <div class="section-head">
+          <div class="eyebrow">Who is this for?</div>
+          <h2>Built around the people who share knowledge.</h2>
+          <p>Whether you publish books, teach a subject or run a members-only resource library, we'd like to understand your workflow.</p>
+        </div>
+        <div class="audience-list">
+          <div class="audience-item">Authors & publishers<span>Offer a more engaging way to explore your catalogue.</span></div>
+          <div class="audience-item">Schools & educators<span>Help learners review chapters and test understanding.</span></div>
+          <div class="audience-item">Coaching institutes<span>Make study material easier to navigate and revise.</span></div>
+          <div class="audience-item">Membership websites<span>Add value to premium digital libraries and resources.</span></div>
+          <div class="audience-item">Course creators<span>Make supporting reading material more interactive.</span></div>
+          <div class="audience-item">Digital libraries<span>Give readers useful tools beyond search and download.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="early-access" style="padding-top:20px">
+      <div class="wrap">
+        <div class="waitlist">
+          <div>
+            <div class="eyebrow">Bring Readwise to your website</div>
+            <h2>Ready to give your readers a better way to read?</h2>
+            <p>Let’s talk about your WordPress website, your digital library and how Readwise can make reading more interactive. Reach out directly on WhatsApp to get started.</p>
+          </div>
+          <div class="form-card">
+            <div style="font-size:11px;color:#62685f;margin-bottom:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">Speak with our team</div>
+            <div style="font-family:Georgia,serif;font-size:25px;line-height:1.2;margin-bottom:10px">Let’s make your library work smarter.</div>
+            <p style="font-size:12px;color:#62685f;margin:0 0 18px">Have questions, want a walkthrough, or ready to add Readwise to your website? Message us directly.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <a class="btn" style="width:100%;margin-top:3px" href="https://wa.me/919937191669?text=Hi%2C%20I%27m%20interested%20in%20Readwise%20for%20WordPress.">Chat on WhatsApp <span aria-hidden="true">→</span></a>
+            <div class="form-note">WhatsApp: +91 99371 91669</div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white" id="faq">
+      <div class="wrap faq-grid">
+        <div class="section-head">
+          <div class="eyebrow">Questions, answered</div>
+          <h2>Before you join the list.</h2>
+          <p>A few quick answers about bringing Readwise to your WordPress website.</p>
+        </div>
+        <div class="faq-list">
+          <details><summary>Is Readwise already built?</summary><p>Yes. Readwise is built as an AI-powered reading experience for WordPress. Contact us on WhatsApp to discuss your website and getting started.</p></details>
+          <details><summary>Is it designed for WordPress?</summary><p>Yes. Readwise is designed to fit into a WordPress website and help you offer a richer eBook reading experience.</p></details>
+          <details><summary>Who can use Readwise?</summary><p>Authors, publishers, schools, educators, coaching institutes, course creators and businesses that offer digital libraries can use this kind of enhanced reading experience.</p></details>
+          <details><summary>How can I get details or a walkthrough?</summary><p>Message us on WhatsApp at +91 99371 91669 and we’ll discuss your requirements.</p></details>
+          
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <div><strong>readwise</strong> &nbsp; A WordPress product concept by Systems Solution.</div>
+      <div>AI-powered eBook reading for WordPress.</div>
+    </div>
+  </footer>
+
+</body>
+</html>
